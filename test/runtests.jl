@@ -2,5 +2,5 @@ using GaussChebyshevFracture
 using Test
 
 @testset "GaussChebyshevFracture.jl" begin
-    # Write your tests here.
+    include("uniform_stress_drop.jl")
 end

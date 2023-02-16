@@ -1,5 +1,7 @@
 module GaussChebyshevFracture
 
-# Write your package code here.
+include("gausschebyshev.jl")
+
+export GaussChebyshev
 
 end
