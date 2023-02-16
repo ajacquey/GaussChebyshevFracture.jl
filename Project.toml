@@ -1,0 +1,13 @@
+name = "GaussChebyshevFracture"
+uuid = "3ef21536-876f-437b-8e16-8b3c2d5a66c3"
+authors = ["Antoine Jacquey <antoine.jacquey@polymtl.ca> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1.7"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
