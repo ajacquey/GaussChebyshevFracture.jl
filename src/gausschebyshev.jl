@@ -23,9 +23,6 @@ struct GaussChebyshev{T<:Real}
     " integration matrix"
     S::Matrix{T}
 
-    # " derivation matrix"
-    # D::Matrix{T}
-
     " Interpolation matrix"
     function interpolation_matrix(x::Vector{T}, s::Vector{T}; kind::Integer=1)::Matrix{T} where {T<:Real}
         if kind == 1
@@ -89,15 +86,14 @@ struct GaussChebyshev{T<:Real}
 end
 
 """
-Returns the solution ``u = \\sum_{1}^{n} S_{ij} F\\left(s_{j}\\right)``
-```
+Returns the solution ``u\\left(x_{i}\\right) = \\sum_{j=1}^{n} S_{ij} F\\left(s_{j}\\right)``
 """
 function u(gc::GaussChebyshev{T}, F::Vector{T})::Vector{T} where {T<:Real}
     return gc.S * F
 end
 
 """
-Returns the gradient of the solution ``\\nabla u = \\sqrt{1 - x^2} \\sum_{j=1}^{n} L_{ij} F\\left(s_{j}\\right)``
+Returns the gradient of the solution ``\\nabla u\\left(x_{i}\\right) = \\sqrt{1 - x^2} \\sum_{j=1}^{n} L_{ij} F\\left(s_{j}\\right)``
 """
 function ∇u(gc::GaussChebyshev{T}, F::Vector{T})::Vector{T} where {T<:Real}
     return gc.wf.(gc.x) .* (gc.L * F)
