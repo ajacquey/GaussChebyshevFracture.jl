@@ -45,12 +45,12 @@ struct GaussChebyshev{T<:Real}
     " Integration matrix"
     function integration_matrix(x::Vector{T}, s::Vector{T}; kind::Integer=2)::Matrix{T} where {T<:Real}
         if kind == 1
-            Φ = [-sin(k * acos(x[i])) / k for i in eachindex(x), k in eachindex(x)]
+            Φ = [-sin(k * acos(x[i])) / k for i in eachindex(x), k in eachindex(s)]
             Φ = hcat(-acos.(x), Φ)
-            B = [2 * cos(k * acos(s[j])) / length(s) for k in eachindex(x), j in eachindex(s)]
+            B = [2 * cos(k * acos(s[j])) / length(s) for k in eachindex(s), j in eachindex(s)]
             B = vcat(fill(1 / length(s), length(s))', B)
         elseif kind == 2
-            Φ = [-0.5 * (sin(k * acos(x[i])) / k - sin((k + 2) * acos(x[i])) / (K + 2)) for i in eachindex(x), k in eachindex(x)]
+            Φ = [-0.5 * (sin(k * acos(x[i])) / k - sin((k + 2) * acos(x[i])) / (k + 2)) for i in eachindex(x), k = 1:length(s)-1]
             Φ = hcat(-0.5 * (acos.(x) .- sin.(2 * acos.(x)) / 2), Φ)
             B = [2 * sin(acos(s[j])) * sin((k + 1) * acos(s[j])) / (length(s) + 1) for k in eachindex(s).-1, j in eachindex(s)]
         else
@@ -72,7 +72,7 @@ struct GaussChebyshev{T<:Real}
                 integration_matrix(x, s; kind=1),
                 )
         elseif kind ==2
-            x = [cos((2 * k - 1) * π / (2 * (n + 1))) for k = n:-1:1]
+            x = [cos((2 * k - 1) * π / (2 * (n + 1))) for k = n+1:-1:1]
             s = [cos(k * π / (n + 1)) for k = n:-1:1]
             return new{T}(x -> sqrt(1 - x^2), 
                 n,
@@ -88,12 +88,17 @@ struct GaussChebyshev{T<:Real}
     end
 end
 
-" Returns the solution u"
+"""
+Returns the solution ``u = \\sum_{1}^{n} S_{ij} F\\left(s_{j}\\right)``
+```
+"""
 function u(gc::GaussChebyshev{T}, F::Vector{T})::Vector{T} where {T<:Real}
     return gc.S * F
 end
 
-" Returns the gradient of the solution ∇u"
+"""
+Returns the gradient of the solution ``\\nabla u = \\sqrt{1 - x^2} \\sum_{j=1}^{n} L_{ij} F\\left(s_{j}\\right)``
+"""
 function ∇u(gc::GaussChebyshev{T}, F::Vector{T})::Vector{T} where {T<:Real}
     return gc.wf.(gc.x) .* (gc.L * F)
 end
