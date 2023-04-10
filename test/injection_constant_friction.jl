@@ -18,16 +18,16 @@ using Test
         gc = GaussChebyshev(n, 2)
 
         # Matrix
-        A = [gc.w[j] / (π * (gc.x[i] - gc.s[j])) for i in eachindex(gc.x), j in eachindex(gc.s)]
+        A = [gc.w[j] / (π * (gc.s[j] - gc.x[i])) for i in eachindex(gc.x), j in eachindex(gc.s)]
 
         # Residual function
         function res!(R, x)
-            R[1:n+1] .= T .- erfc.(abs.(x[n+1] * gc.x)) .+ (A * x[1:n])
+            R[1:n+1] .= T .- erfc.(abs.(x[n+1] * gc.x)) .- (A * x[1:n])
         end
 
         # Jacobian function
         function jac!(J, x)
-            J[1:n+1,1:n] .= A
+            J[1:n+1,1:n] .= -A
             J[:,n+1] .= 2 * abs.(gc.x) .* exp.(-x[n+1]^2 * gc.x.^2) / sqrt(π)
         end
 
@@ -53,16 +53,16 @@ using Test
         gc = GaussChebyshev(n, 2)
 
         # Matrix
-        A = [gc.w[j] / (π * (gc.x[i] - gc.s[j])) for i in eachindex(gc.x), j in eachindex(gc.s)]
+        A = [gc.w[j] / (π * (gc.s[j] - gc.x[i])) for i in eachindex(gc.x), j in eachindex(gc.s)]
 
         # Residual function
         function res!(R, x)
-            R[1:n+1] .= T .- erfc.(abs.(x[n+1] * gc.x)) .+ (A * x[1:n])
+            R[1:n+1] .= T .- erfc.(abs.(x[n+1] * gc.x)) .- (A * x[1:n])
         end
 
         # Jacobian function
         function jac!(J, x)
-            J[1:n+1,1:n] .= A
+            J[1:n+1,1:n] .= -A
             J[:,n+1] .= 2 * abs.(gc.x) .* exp.(-x[n+1]^2 * gc.x.^2) / sqrt(π)
         end
 
@@ -88,16 +88,16 @@ using Test
         gc = GaussChebyshev(n, 2)
 
         # Matrix
-        A = [gc.w[j] / (π * (gc.x[i] - gc.s[j])) for i in eachindex(gc.x), j in eachindex(gc.s)]
+        A = [gc.w[j] / (π * (gc.s[j] - gc.x[i])) for i in eachindex(gc.x), j in eachindex(gc.s)]
 
         # Residual function
         function res!(R, x)
-            R[1:n+1] .= T .- erfc.(abs.(x[n+1] * gc.x)) .+ (A * x[1:n])
+            R[1:n+1] .= T .- erfc.(abs.(x[n+1] * gc.x)) .- (A * x[1:n])
         end
 
         # Jacobian function
         function jac!(J, x)
-            J[1:n+1,1:n] .= A
+            J[1:n+1,1:n] .= -A
             J[:,n+1] .= 2 * abs.(gc.x) .* exp.(-x[n+1]^2 * gc.x.^2) / sqrt(π)
         end
 
@@ -123,16 +123,16 @@ using Test
         gc = GaussChebyshev(n, 2)
 
         # Matrix
-        A = [gc.w[j] / (π * (gc.x[i] - gc.s[j])) for i in eachindex(gc.x), j in eachindex(gc.s)]
+        A = [gc.w[j] / (π * (gc.s[j] - gc.x[i])) for i in eachindex(gc.x), j in eachindex(gc.s)]
 
         # Residual function
         function res!(R, x)
-            R[1:n+1] .= T .- erfc.(abs.(x[n+1] * gc.x)) .+ (A * x[1:n])
+            R[1:n+1] .= T .- erfc.(abs.(x[n+1] * gc.x)) .- (A * x[1:n])
         end
 
         # Jacobian function
         function jac!(J, x)
-            J[1:n+1,1:n] .= A
+            J[1:n+1,1:n] .= -A
             J[:,n+1] .= 2 * abs.(gc.x) .* exp.(-x[n+1]^2 * gc.x.^2) / sqrt(π)
         end
 
