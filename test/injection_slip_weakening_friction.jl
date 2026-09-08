@@ -20,7 +20,7 @@ using DelimitedFiles
         τ₀_τₚ = 0.55
 
         # Number of quadrature points
-        n = 200
+        n = 500
 
         # Gauss-Chebyshec quadrature
         gc = GaussChebyshev(n, 2)
@@ -58,20 +58,20 @@ using DelimitedFiles
             end
         end
 
-        time = collect(range(0.0, stop=15.0, length=200).^2)
+        time = collect(range(0.0, stop=200.0, length=500))
         a = zeros(length(time))
         δ₀ = zeros(length(time))
         F = zeros(n)
         aᵢ = 0.0
 
         for i in eachindex(time)
-            println("Time: ", time[i])
+            # println("Time: ", time[i])
             
 
             # Residual function
             function res!(R, x)
                 f_fₚ = friction(x[1:n])
-                # R[1:n+1] .= (A * x[1:n]) .- x[n+1] * Δp_σ₀ .* ((f_fₚ .- τ₀_τₚ) / Δp_σ₀ .- f_fₚ .* erfc.(abs.(x[n+1] * gc.x / time[i])))
+                
                 R[1:n+1] .= abs(x[n+1]) * Δp_σ₀ * ((f_fₚ .- τ₀_τₚ) / Δp_σ₀ .- f_fₚ .* fluid_pressure(gc.x, x[n+1], time[i])) .- (A * x[1:n])
             end
 
@@ -79,14 +79,13 @@ using DelimitedFiles
             function jac!(J, x)
                 f_fₚ = friction(x[1:n])
                 df_fₚ = friction_derivative(x[1:n])
-                # J[1:n+1,1:n] .= A .- x[n+1] * Δp_σ₀ .* df_fₚ .* (1 / Δp_σ₀ .- erfc.(abs.(x[n+1] * gc.x / time[i])))
-                # J[:,n+1] .= -Δp_σ₀* ((f_fₚ .- τ₀_τₚ) / Δp_σ₀ .- f_fₚ .* erfc.(abs.(x[n+1] * gc.x / time[i])) .+ 2 * x[n+1] * f_fₚ .* abs.(gc.x) / sqrt(π * time[i]) .* exp.(-x[n+1]^2 * gc.x.^2 / time[i]))
+                
                 J[1:n+1, 1:n] .= abs(x[n+1]) * Δp_σ₀ * (df_fₚ / Δp_σ₀ .- df_fₚ .* fluid_pressure(gc.x, x[n+1], time[i])) .- A
                 J[:, n+1] .= x[n+1] / abs(x[n+1]) * (Δp_σ₀ * ((f_fₚ .- τ₀_τₚ) / Δp_σ₀ .- f_fₚ .* fluid_pressure(gc.x, x[n+1], time[i])) .- abs(x[n+1]) * Δp_σ₀ * f_fₚ .* dfluid_pressure(gc.x, x[n+1], time[i]))
             end
 
             # Newton solve
-            res = nlsolve(res!, jac!, vcat(F, aᵢ+0.1), method = :newton)
+            res = nlsolve(res!, jac!, vcat(1.1*F, aᵢ), method = :newton, iterations=200)
 
             # Solutions
             r = res.zero[end]
@@ -94,20 +93,20 @@ using DelimitedFiles
             δ = GaussChebyshevFracture.u(gc, F)
             a[i] = res.zero[end]
             δ₀[i] = δ[floor(Int, n/2) + 1]
-            aᵢ = a[i]
+            aᵢ = a[i]+0.2
 
-            println("\t Crack length: ", aᵢ)
-            println("\t Max slip: ", δ₀[i])
-            println("")
+            # println("\t Crack length: ", aᵢ)
+            # println("\t Max slip: ", δ₀[i])
+            # println("")
         end
 
-        display(lineplot(sqrt.(time), a))
-        open("slip-weakening.csv", "w") do io
-            write(io, "time,a,slip\n") # write header
-            writedlm(io, [time a δ₀], ',')
-        end
-        # Check if numerical solutions is correct (check λ)
-        # @test converged(res) && isapprox(λ, 1.9125140; rtol=1.0e-02)
+        # display(lineplot(sqrt.(time), a))
+        # open("slip-weakening.csv", "w") do io
+        #     write(io, "time,a,slip\n") # write header
+        #     writedlm(io, [time a δ₀], ',')
+        # end
+        # Check if numerical solutions is correct (check a and slip)
+        @test isapprox(a[end], 13.4; rtol=1.0e-02) && isapprox(δ₀[end], 2.05; rtol=1.0e-02)
     end
 end
 end
