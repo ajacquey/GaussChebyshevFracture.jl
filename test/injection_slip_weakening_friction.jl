@@ -5,7 +5,6 @@ using SpecialFunctions
 using NLsolve
 using Statistics
 using Test
-using UnicodePlots
 using DelimitedFiles
 
 @testset "Injection slip-weakening friction" begin
@@ -100,7 +99,6 @@ using DelimitedFiles
             # println("")
         end
 
-        # display(lineplot(sqrt.(time), a))
         # open("slip-weakening.csv", "w") do io
         #     write(io, "time,a,slip\n") # write header
         #     writedlm(io, [time a δ₀], ',')
