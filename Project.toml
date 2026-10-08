@@ -1,10 +1,7 @@
 name = "GaussChebyshevFracture"
 uuid = "3ef21536-876f-437b-8e16-8b3c2d5a66c3"
+version = "0.1.0"
 authors = ["Antoine Jacquey <antoine.jacquey@polymtl.ca> and contributors"]
-version = "1.0.0"
-
-[deps]
-DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 
 [compat]
 julia = "1.7"

@@ -1,3 +1,16 @@
+"""
+    struct GaussChebyshev
+
+A structure to store Gauss-Chebyshev quadrature points and other utilities.
+# Fields
+- `wf::Function` : weight function
+- `n::Integer` : number of quadrature points
+- `x::Vector` : points
+- `s::Vector` : quadrature points
+- `w::Vector` : quadrature weigths
+- `L::Matrix` : interpolation matrix
+- `S::Matrix` : integration matrix 
+"""
 struct GaussChebyshev{T<:Real}
     " weigth function"
     wf::Function
@@ -55,7 +68,13 @@ struct GaussChebyshev{T<:Real}
         end
         return Φ * B
     end
-    " Constructor"
+
+    """
+    Constructor for the Gauss-Chebyshev structure
+    # Arguments
+    - `n::Integer`: the number of elements to compute.
+    - `kind::Integer`: the kind of Gauss-Chebyshev quadrature points (1 or 2)
+    """
     function GaussChebyshev(n::Int64, kind::Integer, T::Type=Float64)
         if kind == 1
             x = [cos(k * π / n) for k = n-1:-1:1]
@@ -86,6 +105,7 @@ struct GaussChebyshev{T<:Real}
 end
 
 """
+    function u(gc::GaussChebyshev{T}, F::Vector{T})::Vector{T} where {T<:Real}
 Returns the solution ``u\\left(x_{i}\\right) = \\sum_{j=1}^{n} S_{ij} F\\left(s_{j}\\right)``
 """
 function u(gc::GaussChebyshev{T}, F::Vector{T})::Vector{T} where {T<:Real}
@@ -93,6 +113,7 @@ function u(gc::GaussChebyshev{T}, F::Vector{T})::Vector{T} where {T<:Real}
 end
 
 """
+    function ∇u(gc::GaussChebyshev{T}, F::Vector{T})::Vector{T} where {T<:Real}
 Returns the gradient of the solution ``\\nabla u\\left(x_{i}\\right) = \\sqrt{1 - x^2} \\sum_{j=1}^{n} L_{ij} F\\left(s_{j}\\right)``
 """
 function ∇u(gc::GaussChebyshev{T}, F::Vector{T})::Vector{T} where {T<:Real}
